@@ -9,7 +9,7 @@ pipline {
 
         stage('Build'){
             steps{
-                echo 'Building'
+                echo 'Building.'
             }
         }
 
