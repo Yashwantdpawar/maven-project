@@ -18,7 +18,7 @@ stages{
             post {
                 success {
                     echo 'Now Archiving...'
-                    archiveArtifacts artifacts: '**/target/*.war'
+                    archiveArtifacts artifacts: '**\target\*.war'
                 }
             }
         }
@@ -27,13 +27,13 @@ stages{
             parallel{
                 stage ('Deploy to Staging'){
                     steps {
-                        bat "winscp -i /home/jenkins/tomcat-demo.pem **/target/*.war localhost@${params.tomcat_dev}:/var/lib/tomcat7/webapps"
+                        bat "winscp -i C:\Program Files (x86)\Jenkins\workspace\Maven-project\webapp\*.war localhost@${params.tomcat_dev}:E:\Tomcat8\apache-tomcat-8.5.37-staging\webapps"
                     }
                 }
 
                 stage ("Deploy to Production"){
                     steps {
-                        bat "winscp -i /home/jenkins/tomcat-demo.pem **/target/*.war localhost@${params.tomcat_prod}:/var/lib/tomcat7/webapps"
+                        bat "winscp -i C:\Program Files (x86)\Jenkins\workspace\Maven-project\webapp\*.war localhost@${params.tomcat_prod}:E:\Tomcat8\apache-tomcat-8.5.37-prod\webapps"
                     }
                 }
             }
