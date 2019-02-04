@@ -1,5 +1,12 @@
 pipeline {
     agent any
+    parameters {
+        string(name: 'tomcat_dev', defaultValue: 'localhost', description: 'Staging Server')
+        string(name: 'tomcat_prod', defaultValue: 'localhost', description: 'Production Server')
+    }
+    triggers {
+        pollSCM('* * * * *')
+    }
     stages{
         stage('Build'){
             steps {
@@ -12,26 +19,19 @@ pipeline {
                 }
             }
         }
-        stage('deploy to staging'){
-          steps {
-                build job: 'deploy-to-staging'
-          }
-        }
-        stage('deploy to Production'){
-          steps {
-            timeout(time:5, unit:'DAYS'){
-                input message:'Approve PRODUCTION Deployment?'
-                }
-            build job: 'deploy-to-staging'
-          }
-          post {
-            success {
-                echo 'Code deployed to Production.'
+      stage('Deployments'){
+        parallel{
+          stage ('Deploy to Staging'){
+            steps{
+              sh "cp -i C:\Program Files (x86)\Jenkins\workspace\Maven-project\webapp **/target/*.war localhost@${params.tomcat_dev}:E:\Tomcat 8\apache-tomcat-8.5.37-staging\webapps"
             }
-            failure{
-                echo 'Deployment failed'
-            }
-          }
         }
-    }
+          stage ('Deploy to Production'){
+            steps{
+              sh "cp -i C:\Program Files (x86)\Jenkins\workspace\Maven-project\webapp **/target/*.war localhost@${params.tomcat_dev}:E:\Tomcat 8\apache-tomcat-8.5.37-staging\webapps"
+            }
+        }
+      }
+   }
+ }
 }
